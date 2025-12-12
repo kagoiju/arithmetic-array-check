@@ -12,8 +12,14 @@ def setup_logging(level=logging.INFO):
         level (int): Уровень логирования (например, logging.INFO, logging.CRITICAL).
     """
     
-    # 1. Создание логгера (корневой логгер)
     logger = logging.getLogger()
+    
+    # === ИСПРАВЛЕНИЕ: Удаление существующих обработчиков ===
+    # Это предотвращает дублирование логов и конфликты уровней при повторном вызове setup_logging.
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+    # ========================================================
+        
     logger.setLevel(level)
     
     # 2. Формат записи логов
@@ -23,7 +29,6 @@ def setup_logging(level=logging.INFO):
     )
     
     # 3. Обработчик для записи в файл (FileHandler)
-    # Режим 'w' перезаписывает файл при каждом запуске для демонстрации
     file_handler = logging.FileHandler('app_activity.log', mode='w', encoding='utf-8')
     file_handler.setLevel(level)
     file_handler.setFormatter(formatter)

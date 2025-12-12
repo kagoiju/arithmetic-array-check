@@ -158,6 +158,4 @@ def main(logging_level=logging.INFO):
 
 
 if __name__ == '__main__':
-    # Демонстрация 1: Логирование INFO (по умолчанию)
-    # Запускаем с уровнем CRITICAL, чтобы продемонстрировать "отключение" INFO-сообщений
-    main(logging.CRITICAL)
+    main(logging.INFO)
