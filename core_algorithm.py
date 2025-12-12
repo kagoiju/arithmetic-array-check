@@ -7,6 +7,15 @@
 проверяя их последовательно.
 """
 
+import logging
+# Импортируем настройку логирования
+try:
+    from logging_setup import setup_logging
+except ImportError:
+    pass
+
+logger = logging.getLogger(__name__)
+
 def check_arithmetic_possibility(a, b, target):
     """
     Проверяет, можно ли получить 'target' из чисел 'a' и 'b' с помощью 
@@ -40,10 +49,18 @@ def check_arithmetic_possibility(a, b, target):
         return True, f"{a} * {b}"
 
     # Деление (с проверкой на ноль)
-    if b != 0 and a / b == target:
-        return True, f"{a} / {b}"
-    if a != 0 and b / a == target:
-        return True, f"{b} / {a}"
+    # Используем DEBUG для логирования внутренних проверок
+    if b != 0:
+        if a / b == target:
+            return True, f"{a} / {b}"
+    else:
+        logger.debug(f"Проверка деления: Пропущено деление {a} / {b} (деление на ноль).")
+        
+    if a != 0:
+        if b / a == target:
+            return True, f"{b} / {a}"
+    else:
+        logger.debug(f"Проверка деления: Пропущено деление {b} / {a} (деление на ноль).")
 
     return False, None
 
@@ -62,17 +79,25 @@ def process_arrays(arr1, arr2, arr3):
     Returns:
         list[dict] | str: Список словарей с результатами проверки для каждой тройки чисел
                           или строка с сообщением об ошибке, если массивы разной длины.
-                          
-                          Каждый словарь результата содержит ключи: 
-                          'a', 'b', 'target', 'found', 'explanation'.
     """
+    logger.info("Действие сервера: Вызвана функция process_arrays для выполнения алгоритма.")
+    
     if not (len(arr1) == len(arr2) == len(arr3)):
+        logger.error("Действие сервера: Сбой алгоритма. Массивы разной длины.")
         return "Ошибка: Массивы должны быть одинаковой длины."
 
     results = []
-    # zip объединяет элементы с одинаковыми индексами
-    for a, b, target in zip(arr1, arr2, arr3): 
+    logger.info(f"Действие сервера: Начинается последовательная проверка {len(arr1)} пар чисел.")
+    
+    for i, (a, b, target) in enumerate(zip(arr1, arr2, arr3)):
         found, explanation = check_arithmetic_possibility(a, b, target)
+        
+        # Логирование на уровне DEBUG для детального отслеживания каждой итерации
+        if found:
+            logger.debug(f"Действие сервера: Проверка #{i+1} ({a}, {b}) -> {target}. Успех: {explanation}")
+        else:
+            logger.debug(f"Действие сервера: Проверка #{i+1} ({a}, {b}) -> {target}. Неудача.")
+            
         results.append({
             'target': target,
             'a': a,
@@ -80,6 +105,8 @@ def process_arrays(arr1, arr2, arr3):
             'found': found,
             'explanation': explanation
         })
+        
+    logger.info("Действие сервера: Алгоритм проверки успешно завершен.")
     return results
 
 
@@ -87,7 +114,9 @@ if __name__ == '__main__':
     # Тестирование основного алгоритма
     A = [5, 10, 20]
     B = [3, 2, 4]
-    C = [8, 5, 80] # 5+3=8, 10/2=5, 20*4=80
+    C = [8, 5, 80] 
+
+    logger.warning("Запуск модуля core_algorithm.py в режиме тестирования (через __main__).")
 
     print(f"Массивы для теста: A={A}, B={B}, C={C}")
     test_results = process_arrays(A, B, C)
