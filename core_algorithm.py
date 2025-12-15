@@ -48,19 +48,23 @@ def check_arithmetic_possibility(a, b, target):
     if a * b == target:
         return True, f"{a} * {b}"
 
-    # Деление (с проверкой на ноль)
-    # Используем DEBUG для логирования внутренних проверок
-    if b != 0:
+  # Деление (с проверкой на ноль через try/except)
+    
+    # a / b
+    try:
         if a / b == target:
             return True, f"{a} / {b}"
-    else:
-        logger.debug(f"Проверка деления: Пропущено деление {a} / {b} (деление на ноль).")
-        
-    if a != 0:
+    except ZeroDivisionError:
+        logger.debug(f"Проверка деления: Пропущено деление {a} / {b} (ZeroDivisionError).")
+        pass # Игнорируем и идем дальше
+
+    # b / a
+    try:
         if b / a == target:
             return True, f"{b} / {a}"
-    else:
-        logger.debug(f"Проверка деления: Пропущено деление {b} / {a} (деление на ноль).")
+    except ZeroDivisionError:
+        logger.debug(f"Проверка деления: Пропущено деление {b} / {a} (ZeroDivisionError).")
+        pass # Игнорируем и идем дальше
 
     return False, None
 
@@ -83,7 +87,9 @@ def process_arrays(arr1, arr2, arr3):
     logger.info("Действие сервера: Вызвана функция process_arrays для выполнения алгоритма.")
     
     if not (len(arr1) == len(arr2) == len(arr3)):
+        # Генерация исключения
         logger.error("Действие сервера: Сбой алгоритма. Массивы разной длины.")
+        # Для простоты возвращаем строку, как раньше, но логирование ошибки выполнено
         return "Ошибка: Массивы должны быть одинаковой длины."
 
     results = []
