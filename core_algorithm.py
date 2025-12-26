@@ -116,6 +116,7 @@ def process_arrays(arr1, arr2, arr3):
     return results
 
 
+
 if __name__ == '__main__':
     # Тестирование основного алгоритма
     A = [5, 10, 20]
